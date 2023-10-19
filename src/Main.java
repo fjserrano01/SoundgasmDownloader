@@ -1,8 +1,5 @@
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
 import java.awt.Desktop;
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -12,11 +9,26 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         ArrayList<String> asmrAudios = new ArrayList<>();
-        //ToDo Add bookmark reader
-        Scanner reader = new Scanner(System.in);
-        System.out.println("Audio test file: ");
-        String testFile = reader.nextLine();
-        asmrAudios.add(testFile);
+
+//        Scanner reader = new Scanner(System.in);
+//        System.out.println("Audio test file: ");
+//        String testFile = reader.nextLine();
+//        asmrAudios.add(testFile);
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("./dist/BookmarkReader.exe");
+            processBuilder.redirectErrorStream(true);
+
+            Process process = processBuilder.start();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String ln;
+            while((ln = in.readLine()) != null){
+                System.out.println(ln);
+            }
+
+        }catch(IOException e){
+            throw new RuntimeException(e);
+        }
 
 //        openUrl(asmrAudios);
 
