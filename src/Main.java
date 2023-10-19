@@ -2,47 +2,33 @@ import java.awt.Desktop;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        ArrayList<String> asmrAudios = new ArrayList<>();
+        HashMap<String, String> asmrAudios;
 
 //        Scanner reader = new Scanner(System.in);
-//        System.out.println("Audio test file: ");
-//        String testFile = reader.nextLine();
-//        asmrAudios.add(testFile);
-        try {
-            ProcessBuilder processBuilder = new ProcessBuilder("./dist/BookmarkReader.exe");
-            processBuilder.redirectErrorStream(true);
+//        System.out.println("Individual link or all bookmarks: ");
+//        String ans = reader.nextLine();
 
-            Process process = processBuilder.start();
+        //Gets list of soundgasm links from Bookmarks
+        asmrAudios = bookmarkList();
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            String ln;
-            while((ln = in.readLine()) != null){
-                System.out.println(ln);
-            }
+//       ToDo Print if link is dead: openUrl(asmrAudios);
+        //Get download file path
+        Scanner reader = new Scanner(System.in);
+        System.out.println("Enter file output location:");
+        String filePath = reader.nextLine();//C:/Users/Elizabeth Serrano/Documents/audios/
 
-        }catch(IOException e){
-            throw new RuntimeException(e);
+        //Parse html to get m4a link and then download with link
+        System.out.println("Audio link list:");
+        for(Map.Entry<String, String> bookmark : asmrAudios.entrySet()){
+            String link = getUrlLink(bookmark.getValue());
+            downloadAudio(link, bookmark.getKey(), filePath);
         }
-
-//        openUrl(asmrAudios);
-
-        //ToDo Print if link is dead
-
-        //Parse html to get m4a link
-        String url = getUrlLink(asmrAudios.get(0));
-        System.out.println(url);
-
-        //Download m4a file
-        String [] audioName = asmrAudios.get(0).split("/");
-        String fileName = audioName[audioName.length-1];
-        System.out.println(fileName);
-        downloadAudio(url, fileName);
 
     }
 
@@ -58,6 +44,33 @@ public class Main {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static HashMap<String, String> bookmarkList(){
+        HashMap<String, String> bookmarks = new HashMap<>();
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("./dist/BookmarkReader.exe");
+            processBuilder.redirectErrorStream(true);
+
+            Process process = processBuilder.start();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String ln;
+            while((ln = reader.readLine()) != null){
+                if(ln.contains("soundgasm.net")){
+                    String [] audioName = ln.split("/");
+                    String name = audioName[audioName.length -1];
+                    bookmarks.put(name, ln);
+                }
+            }
+
+            process.destroy();
+            reader.close();
+        }catch (IOException e){
+            throw new RuntimeException(e);
+        }
+
+        return bookmarks;
     }
 
     //Get link of m4a file from site html
@@ -82,11 +95,9 @@ public class Main {
     }
 
     //Download m4a file
-    public static void downloadAudio(String url, String fileName){
-        Scanner reader = new Scanner(System.in);
-        System.out.println("Enter file output location:");
-        String filePath = reader.nextLine();//C:/Users/Elizabeth Serrano/Documents/audios/
-        try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
+    public static void downloadAudio(String url, String fileName, String filePath){
+
+        try (BufferedInputStream in = new BufferedInputStream(new URI(url).toURL().openStream());
              FileOutputStream fileOutputStream = new FileOutputStream(filePath+fileName+".m4a")
         ){
             byte[] dataBuffer = new byte[1024];
@@ -94,7 +105,8 @@ public class Main {
             while((bytesRead = in.read(dataBuffer, 0, 1024)) != -1){
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
             }
-        } catch (IOException e){
+
+        } catch (IOException | URISyntaxException e){
             System.out.println("file not downloaded" + fileName);
             throw new RuntimeException(e);
         }
