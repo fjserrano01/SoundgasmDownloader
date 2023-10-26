@@ -13,8 +13,6 @@ public class Main {
         //Gets list of soundgasm links from Bookmarks
         asmrAudios = urlFunctions.bookmarkList();
 
-//       ToDo Make sure duplicates are not added to hashmap
-
         //Get download file path
         Scanner reader = new Scanner(System.in);
         System.out.println("Enter file output location:");
