@@ -29,6 +29,7 @@ public class urlFunctions {
         }
     }
 
+    //Returns HashMap with <Name, Link>
     public static HashMap<String, String> bookmarkList(){
         HashMap<String, String> bookmarks = new HashMap<>();
         try {
@@ -40,6 +41,7 @@ public class urlFunctions {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String ln;
             while((ln = reader.readLine()) != null){
+                ln = ln.replace("view-source:","");
                 if(ln.contains("soundgasm.net") && activeURL(ln)){
                     String [] audioName = ln.split("/");
                     String name = audioName[audioName.length -1];
@@ -57,6 +59,18 @@ public class urlFunctions {
         }
 
         return bookmarks;
+    }
+
+    public static void downloadSingleBookmark(String link, String filepath){
+        link = link.replace("view-source:","");
+        if(link.contains("soundgasm.net") && urlFunctions.activeURL(link)){
+            String [] audioName = link.split("/");
+            String name = audioName[audioName.length -1];
+            String url = urlFunctions.getUrlLink(link);
+            System.out.println(url);
+            urlFunctions.downloadAudio(url, name, filepath);
+            System.out.println("Finished Downloading");
+        }
     }
 
     //Get link of m4a file from site html

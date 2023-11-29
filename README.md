@@ -2,11 +2,11 @@ Download audio files from Soundgasm.com through Chrome Bookmarks
 
 Instructions:
 
-Run .jar file located in /out/Artifacts/ folder.
+Download git repository and run Main.
 
 Ongoing:
 
-Adding ability to download one or all links
+Creating runnable file for bookmarks and jar file
 
 Requirements:
 
