@@ -9,8 +9,7 @@ public class Selections {
         String input = reader.nextLine();
 
         if(input.equalsIgnoreCase("y")){
-            HashMap<String, String> asmrAudios = urlFunctions.bookmarkList();
-            System.out.println(asmrAudios.keySet());
+            urlFunctions.bookmarkList();
         }
     }
 
@@ -31,7 +30,12 @@ public class Selections {
                 for(Map.Entry<String, String> bookmark : asmrAudios.entrySet()){
                     System.out.println(bookmark.getValue());
                     String link = urlFunctions.getUrlLink(bookmark.getValue());
-                    urlFunctions.downloadAudio(link, bookmark.getKey(), filePath);
+                    if(!link.isEmpty()){
+                        urlFunctions.downloadAudio(link, bookmark.getKey(), filePath);
+                    }
+                    else{
+                        System.out.print(" Not Downloaded");
+                    }
                 }
             }
             case "2": {

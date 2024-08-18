@@ -41,8 +41,16 @@ public class urlFunctions {
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
             String ln;
             while((ln = reader.readLine()) != null){
-                ln = ln.replace("view-source:","");
+                String[] noWWW = ln.split("https://soundgasm.net");
+                String[] wwwCheck = ln.split("https://www.soundgasm.net");
+                //Its not the first string, and its not the second string. It skips
+                // if it is the first string, its not the second so it doesnt skip. vice versa
+                if(!noWWW[0].isEmpty() && !wwwCheck[0].isEmpty()){
+                    continue;
+                }
                 if(ln.contains("soundgasm.net") && activeURL(ln)){
+                    System.out.println("Not Skipped");
+                    System.out.println(ln);
                     String [] audioName = ln.split("/");
                     String name = audioName[audioName.length -1];
                     if(bookmarks.containsKey(name)){
@@ -67,9 +75,15 @@ public class urlFunctions {
             String [] audioName = link.split("/");
             String name = audioName[audioName.length -1];
             String url = urlFunctions.getUrlLink(link);
-            System.out.println(url);
-            urlFunctions.downloadAudio(url, name, filepath);
-            System.out.println("Finished Downloading");
+
+            if(!url.isEmpty()){
+                urlFunctions.downloadAudio(url, name, filepath);
+                System.out.println("Finished Downloading");
+            }
+            else{
+                System.out.println("download link: " + url);
+                System.out.println("url not downloadable");
+            }
         }
     }
 
